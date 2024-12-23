@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "nfa.h": "c",
+        "regex_to_nfa.h": "c"
+    }
+}
