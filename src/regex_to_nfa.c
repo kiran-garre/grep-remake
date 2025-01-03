@@ -150,6 +150,7 @@ nfa kleene_closure(nfa f1) {
     f1.tail->outgoing[1] = f1.head;
 
     return (nfa){s0, sa};
+    
 }
 
 void free_nfa(nfa n) {
@@ -164,7 +165,7 @@ regex_result evaluate_nfa(char* expression, FILE* file) {
 
     nfa regex = generate_nfa(expression);
 
-    // Initialize array for tracking lines with matches
+    // Initialize array for tracking lines containing matches
     int buffer_size = 100;
     int buffer_index = 0;
     int* out_lines = malloc(buffer_size * sizeof(int));
@@ -186,7 +187,7 @@ regex_result evaluate_nfa(char* expression, FILE* file) {
             }
             if (accept_line) {
                 out_lines[buffer_index++] = line;
-                if (buffer_index == buffer_size) {
+                if (buffer_index == buffer_size) { // reallocate buffer if needed
                     buffer_size *= 2;
                     out_lines = realloc(out_lines, buffer_size * sizeof(int));
                 }
@@ -200,10 +201,9 @@ regex_result evaluate_nfa(char* expression, FILE* file) {
         else if (accept_line) { // match already found on this line
             continue;
         }
+
         // Collect all epsilon-connected states and add them to active_states
         // Then transition to new state (or error state)
-        // Since states only have up to 2 incoming edges, each state can
-        // only be added to active_states twice (at most)
         for (int i = 0; i < active_index; i++) {
             state* s = active_states[i];
             if (s->terminated) {
@@ -214,10 +214,10 @@ regex_result evaluate_nfa(char* expression, FILE* file) {
                 if (s->outgoing[j]->terminated) {
                     continue;
                 }
-                else if (s->types[j] == EPSILON) {
+                else if (s->types[j] == EPSILON) { // add epsilon transitions to active states
                     active_states[active_index++] = s->outgoing[j]; 
                 }
-                else if (s->types[j] == c) {
+                else if (s->types[j] == c) { // take literal edge if it exists
                     new_state = s->outgoing[j];
                 }
             }
@@ -233,7 +233,7 @@ regex_result evaluate_nfa(char* expression, FILE* file) {
             }
         }
         int num_errors = 0;
-        for (int i = 0; i < active_index; i++) { // count terminated (error) states
+        for (int i = 0; i < active_index; i++) {
             if (active_states[i]->terminated) {
                 num_errors++;
             }
@@ -249,8 +249,3 @@ regex_result evaluate_nfa(char* expression, FILE* file) {
     free_nfa(regex);
     return (regex_result){.num_match_lines = buffer_index, .match_lines = out_lines};
 }
-
-/*
-Barry | Adam
-Barry////Adam///|
-*/

@@ -6,6 +6,9 @@
 
 #include <stdbool.h>
 
+/*
+ * State struct for NFAs and DFAs
+ */
 typedef struct state {
     bool accepting;
     int num_outgoing;
@@ -21,11 +24,5 @@ typedef struct nfa {
     state** pointers;
     int num_states;
 } nfa;
-
-typedef struct dfa {
-    int num_states;
-    unsigned char** transitions;
-    int accepting_states[ALPHABET_SIZE];
-} dfa;
 
 #endif

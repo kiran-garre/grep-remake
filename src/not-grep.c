@@ -19,6 +19,7 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
     
+    // Get list of lines containing matches
     regex_result result = evaluate_nfa(expression, file);
 
     int max_line_length = 256;
@@ -39,7 +40,7 @@ int main(int argc, char* argv[]) {
             buffer = realloc(buffer, sizeof(char) * max_line_length);
         }
         if (c == '\n') {
-            if (result.match_lines[i] == line_counter) {
+            if (result.match_lines[i] == line_counter) { // print line if line contains a match
                 printf("%s\n", buffer);
                 i++;
                 if (i == result.num_match_lines) {
